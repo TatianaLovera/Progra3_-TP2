@@ -58,6 +58,7 @@ public class MainForm extends JFrame {
         getContentPane().add(panelBotones, BorderLayout.SOUTH);
     }
 
+    
     private void ingresarSendero() {
         if (estaciones.size() < 2) {
             JOptionPane.showMessageDialog(this, "Debe haber al menos dos estaciones.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -88,6 +89,18 @@ public class MainForm extends JFrame {
                     return;
                 }
 
+                // Verificar si ya existe la arista (en ambas direcciones)
+                boolean yaExiste = aristas.stream().anyMatch(a ->
+                    (a.getInicio().equals(inicio) && a.getFin().equals(fin)) ||
+                    (a.getInicio().equals(fin) && a.getFin().equals(inicio))
+                );
+
+                if (yaExiste) {
+                    JOptionPane.showMessageDialog(this, "Este sendero ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Si todo está bien, crear y agregar la arista
                 Aristas arista = new Aristas(inicio, fin, peso);
                 aristas.add(arista);
                 JOptionPane.showMessageDialog(this, "Sendero ingresado con éxito.");
