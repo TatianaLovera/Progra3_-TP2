@@ -1,7 +1,7 @@
 package main;
 
 import controlador.GrafoController;
-import interfaz.MainForm;
+import interfaz.GrafoInicial;
 import logica.GrafoIngresado;
 
 import javax.swing.*;
@@ -9,10 +9,16 @@ import javax.swing.*;
 public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
+            // Crear el modelo
             GrafoIngresado modelo = new GrafoIngresado();
-            MainForm vista = new MainForm(null);  // temporal
-            GrafoController controlador = new GrafoController( modelo);
-            vista = new MainForm(controlador);  // pasamos el controlador correcto
+            
+            // Crear el controlador, pasándole el modelo
+            GrafoController controlador = new GrafoController(modelo);
+            
+            // Crear la vista (MainForm), pasándole el controlador
+            GrafoInicial vista = new GrafoInicial(controlador);
+            
+            // Hacer visible la vista
             vista.setVisible(true);
         });
     }
