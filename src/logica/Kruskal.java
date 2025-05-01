@@ -13,33 +13,49 @@ public class Kruskal {
         List<Aristas> agm = new ArrayList<>();
         List<Aristas> aristas = new ArrayList<>(grafo.getAristas());
         ordenarAristasPorPeso(aristas);
-        
-        Set<String> padres = new HashSet<>(); // Conjunto de padres para evitar ciclos
+
+        Map<String, List<String>> adjacencia = new HashMap<>();
+        for (String estacion : grafo.getEstaciones()) {
+            adjacencia.put(estacion, new ArrayList<>());
+        }
 
         for (Aristas arista : aristas) {
-            if (!formarCiclo(arista, agm, padres)) {
+            String inicio = arista.getInicio();
+            String fin = arista.getFin();
+
+            if (!hayCamino(inicio, fin, adjacencia, new HashSet<>())) {
                 agm.add(arista);
+                adjacencia.get(inicio).add(fin);
+                adjacencia.get(fin).add(inicio);
             }
         }
-        return esConexo(agm) ? agm : null;
+
+        if (esConexo(agm)) {
+            return agm;
+        } else {
+            return null;
+        }
     }
 
-    private boolean formarCiclo(Aristas arista, List<Aristas> agm, Set<String> padres) {
-        if (!padres.contains(arista.getInicio()) || !padres.contains(arista.getFin())) {
-            padres.add(arista.getInicio());
-            padres.add(arista.getFin());
-            return false;
+    private boolean hayCamino(String origen, String destino, Map<String, List<String>> adjacencia, Set<String> visitados) {
+        if (origen.equals(destino)) return true;
+        visitados.add(origen);
+
+        for (String vecino : adjacencia.get(origen)) {
+            if (!visitados.contains(vecino)) {
+                if (hayCamino(vecino, destino, adjacencia, visitados)) {
+                    return true;
+                }
+            }
         }
-        return true;
+        return false;
     }
 
     private boolean esConexo(List<Aristas> agm) {
-        Set<String> visitados = new HashSet<>();
-        for (Aristas arista : agm) {
-            visitados.add(arista.getInicio());
-            visitados.add(arista.getFin());
+        if (agm.size() != grafo.getEstaciones().size() - 1) {
+            return false;
         }
-        return visitados.size() == grafo.getEstaciones().size();
+        return true;
     }
 
     private void ordenarAristasPorPeso(List<Aristas> aristas) {
