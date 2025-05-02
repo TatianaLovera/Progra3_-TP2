@@ -15,7 +15,7 @@ public class Main {
             // Crear el controlador, pasándole el modelo
             GrafoController controlador = new GrafoController(modelo);
             
-            // Crear la vista (MainForm), pasándole el controlador
+            // Crear la vista (GrafoInicial), pasándole el controlador
             GrafoInicial vista = new GrafoInicial(controlador);
             
             // Hacer visible la vista

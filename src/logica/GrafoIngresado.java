@@ -1,56 +1,9 @@
 package logica;
-/*
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-public class GrafoIngresado {
-    private List<Estacion> estaciones;
-    private List<Aristas> aristas;
-
-    public GrafoIngresado() {
-        estaciones = new ArrayList<>();
-        aristas = new ArrayList<>();
-    }
-
-    public void agregarEstacion(Estacion estacion) {
-        if (!estaciones.contains(estacion)) {
-            estaciones.add(estacion);
-        }
-    }
-
-    public void agregarArista(Aristas arista) {
-        validarArista(arista);
-        aristas.add(arista);
-    }
-
-    private void validarArista(Aristas arista) {
-        if (arista.getPeso() < 0) {
-            throw new IllegalArgumentException("El peso no puede ser negativo");
-        }
-        if (contieneArista(arista)) {
-            throw new IllegalArgumentException("No se pueden repetir aristas");
-        }
-    }
-
-    public List<Estacion> getEstaciones() {
-        return estaciones;
-    }
-
-    public List<Aristas> getAristas() {
-        return aristas;
-    }
-
-    public boolean contieneArista(Aristas nueva) {
-        return aristas.stream().anyMatch(a ->
-            (a.getInicio().equals(nueva.getInicio()) && a.getFin().equals(nueva.getFin())) ||
-            (a.getInicio().equals(nueva.getFin()) && a.getFin().equals(nueva.getInicio()))
-        );
-    }
-}*/
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GrafoIngresado {
     private List<String> estaciones;
@@ -106,10 +59,15 @@ public class GrafoIngresado {
         return false;
     }
 
-    // Placeholder para ejecutar Kruskal (lo llenaremos después si querés)
+    
     public List<Aristas> ejecutarKruskal() {
         Kruskal kruskal = new Kruskal(this);
         return kruskal.encontrarAGM();
+    }
+    
+    public List<Aristas> ejecutarPrim() {
+        Prim prim = new Prim(this);
+        return prim.encontrarAGM();
     }
     
     public List<String[]> getAristasComoStrings() {
@@ -118,5 +76,23 @@ public class GrafoIngresado {
             lista.add(new String[] { arista.getInicio(), arista.getFin(), String.valueOf(arista.getPeso()) });
         }
         return lista;
+    }
+    
+    public boolean esConexo() {
+        if (aristas.isEmpty()) {
+            return false; // No hay senderos → no es conexo
+        }
+
+        Set<String> visitadas = new HashSet<>();
+        String inicio = estaciones.get(0);
+
+        // Recorremos BFS para llenar el conjunto de visitadas
+        for (String destino : estaciones) {
+            if (!visitadas.contains(destino)) {
+                Bfs.bfs(inicio, visitadas, aristas, destino);
+            }
+        }
+
+        return visitadas.size() == estaciones.size();
     }
 }

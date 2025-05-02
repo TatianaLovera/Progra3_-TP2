@@ -11,20 +11,20 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GrafoKruskal extends JFrame {
+public class GrafoPrim extends JFrame {
     private JMapViewer mapa;
     private GrafoController controlador;
     private JLabel impactoTotalLabel;
 
-    public GrafoKruskal(GrafoController controlador) {
+    public GrafoPrim(GrafoController controlador) {
         this.controlador = controlador;
 
-        setTitle("AGM de Kruskal");
+        setTitle("AGM de Prim");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Título arriba
-        JLabel tituloLabel = new JLabel("Camino creado a través del Algoritmo de Kruskal", SwingConstants.CENTER);
+        JLabel tituloLabel = new JLabel("Camino creado a través del Algoritmo de Prim", SwingConstants.CENTER);
         tituloLabel.setFont(new Font("Arial", Font.BOLD, 16));
 
         // Mapa centrado en las Cataratas del Iguazú
@@ -35,12 +35,12 @@ public class GrafoKruskal extends JFrame {
         for (String nombre : controlador.getEstacionesNombres()) {
             Coordinate coord = controlador.getCoordenadaEstacion(nombre);
             MapMarkerDot marcador = new MapMarkerDot(nombre, coord);
-            marcador.setBackColor(Color.CYAN);  
+            marcador.setBackColor(Color.RED);  
             mapa.addMapMarker(marcador);
         }
 
         // Dibujar AGM
-        List<String[]> agm = controlador.obtenerAGMKruskal();
+        List<String[]> agm = controlador.obtenerAGMPrim();
         for (String[] sendero : agm) {
             Coordinate inicio = controlador.getCoordenadaEstacion(sendero[0]);
             Coordinate fin = controlador.getCoordenadaEstacion(sendero[1]);
@@ -52,17 +52,17 @@ public class GrafoKruskal extends JFrame {
             coords.add(inicio); // cerrar polígono
 
             MapPolygonImpl linea = new MapPolygonImpl(coords);
-            linea.setColor(Color.MAGENTA);
+            linea.setColor(Color.YELLOW);
             mapa.addMapPolygon(linea);
 
             Coordinate medio = obtenerPuntoMedio(inicio, fin);
-            MapMarkerDot puntoImpacto = new MapMarkerDot(impacto, medio);
-            puntoImpacto.setBackColor(Color.CYAN);  
-            mapa.addMapMarker(puntoImpacto);
+            MapMarkerDot marcadorImpacto = new MapMarkerDot(impacto, medio);
+            marcadorImpacto.setBackColor(Color.RED);  // opcional, podés cambiarlo
+            mapa.addMapMarker(marcadorImpacto);
         }
 
         // Etiqueta abajo para impacto total
-        int impactoTotal = controlador.obtenerPesoTotalAGM();
+        int impactoTotal = controlador.obtenerPesoTotalAGMPrim();
         impactoTotalLabel = new JLabel("Impacto ambiental total: " + impactoTotal, SwingConstants.CENTER);
         impactoTotalLabel.setFont(new Font("Arial", Font.PLAIN, 14));
 

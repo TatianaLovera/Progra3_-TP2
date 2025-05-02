@@ -1,40 +1,8 @@
 package controlador;
-/*
-import interfaz.MainForm;
-import logica.*;
-
-public class GrafoController {
-    private GrafoIngresado modelo;
-    
-
-    public GrafoController( GrafoIngresado modelo) {
-        
-        this.modelo = modelo;
-    }
-
-    public void agregarEstacion(Estacion estacion) {
-        modelo.agregarEstacion(estacion);
-    }
-
-    public void agregarArista(Aristas arista) {
-        modelo.agregarArista(arista);
-    }
-
-    public java.util.List<Estacion> getEstaciones() {
-        return modelo.getEstaciones();
-    }
-
-    public java.util.List<Aristas> getAristas() {
-        return modelo.getAristas();
-    }
-
-    public boolean existeArista(Aristas arista) {
-        return modelo.contieneArista(arista);
-    }
-}*/
 
 import logica.Aristas;
 import logica.GrafoIngresado;
+import logica.Prim;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 
 import java.util.*;
@@ -81,6 +49,10 @@ public class GrafoController {
     public List<Aristas> getAristas() {
         return grafo.getAristas();
     }
+    
+    public List<String[]> getSenderos() {
+        return grafo.getAristasComoStrings();
+    }
 
     // Obtener AGM con Kruskal
     public List<Aristas> ejecutarKruskal() {
@@ -96,9 +68,7 @@ public class GrafoController {
         return resultado;
     }
     
-    public List<String[]> getSenderos() {
-        return grafo.getAristasComoStrings();
-    }
+   
     
     public int obtenerPesoTotalAGM() {
         List<String[]> agm = obtenerAGMKruskal();
@@ -116,6 +86,63 @@ public class GrafoController {
         }
 
         return total;
+    }
+    
+ // Obtener AGM con Prim
+    public List<Aristas> ejecutarPrim() {
+        return grafo.ejecutarPrim();
+    }
+
+    public List<String[]> obtenerAGMPrim() {
+        List<Aristas> agm = grafo.ejecutarPrim();
+        List<String[]> resultado = new ArrayList<>();
+
+        if (agm != null) {
+            for (Aristas arista : agm) {
+                resultado.add(new String[]{
+                    arista.getInicio(),
+                    arista.getFin(),
+                    String.valueOf(arista.getPeso())
+                });
+            }
+        }
+
+        return resultado;
+    }
+    
+    public int obtenerPesoTotalAGMPrim() {
+        Prim prim = new Prim(grafo);
+        List<Aristas> agm = prim.encontrarAGM();
+        int total = 0;
+
+        if (agm != null) {
+            for (Aristas arista : agm) {
+                total += arista.getPeso();
+            }
+        }
+
+        return total;
+    }
+    
+    public ResultadoAgregarEstacion puedeAgregarEstacion(String nombre, Coordinate coord) {
+        // Verificar nombre repetido
+        if (estacionesCoordenadas.containsKey(nombre)) {
+            return ResultadoAgregarEstacion.NOMBRE_REPETIDO;
+        }
+
+        // Verificar coordenada repetida
+        for (Coordinate existente : estacionesCoordenadas.values()) {
+            if (Math.abs(existente.getLat() - coord.getLat()) < 1e-4 &&
+                Math.abs(existente.getLon() - coord.getLon()) < 1e-4) {
+                return ResultadoAgregarEstacion.COORDENADA_REPETIDA;
+            }
+        }
+
+        return ResultadoAgregarEstacion.OK;
+    }
+    
+    public boolean esConexo() {
+        return grafo.esConexo();
     }
 
 	
