@@ -32,7 +32,8 @@ public class Prim {
             visitados.add(nuevoVertice);
 
             // Verificamos si el grafo sigue siendo conexo usando BFS
-            if (!Bfs.bfs(verticeInicial, new HashSet<>(), grafo.getAristas(), nuevoVertice)) {
+            Set<String> estacionesVisitadas = Bfs.bfs(verticeInicial, grafo.getAristas());
+            if (!estacionesVisitadas.containsAll(grafo.getEstaciones())) {
                 return null; // Si no está conectado, retornamos null
             }
         }

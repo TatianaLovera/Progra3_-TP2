@@ -29,7 +29,7 @@ public class Kruskal {
                 adjacencia.get(fin).add(inicio);
 
                 // Verificamos si el grafo sigue siendo conexo usando BFS
-                if (!Bfs.bfs(inicio, new HashSet<>(), grafo.getAristas(), fin)) {
+                if (!Bfs.bfs(inicio, grafo.getAristas()).containsAll(grafo.getEstaciones())) {
                     agm.remove(arista); // Si no está conectado, removemos la arista
                 }
             }

@@ -1,9 +1,6 @@
 package logica;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class GrafoIngresado {
     private List<String> estaciones;
@@ -59,6 +56,25 @@ public class GrafoIngresado {
         return false;
     }
 
+    // Verifica si el grafo es conexo
+    public boolean esConexo() {
+        if (getEstaciones().isEmpty()) {
+            return false; // No hay estaciones, no es conexo
+        }
+
+        if (getAristas().isEmpty() && getEstaciones().size() > 1) {
+            return false; // Si no hay aristas y más de una estación, no es conexo
+        }
+
+        // Tomamos el primer vértice de la lista de estaciones
+        String inicio = getEstaciones().get(0);
+
+        // Obtenemos las estaciones visitadas a partir del primer vértice usando BFS
+        Set<String> visitadas = Bfs.bfs(inicio, aristas);
+
+        // Si el número de estaciones visitadas es igual al total de estaciones, el grafo es conexo
+        return visitadas.size() == getEstaciones().size();
+    }
     
     public List<Aristas> ejecutarKruskal() {
         Kruskal kruskal = new Kruskal(this);
@@ -76,23 +92,5 @@ public class GrafoIngresado {
             lista.add(new String[] { arista.getInicio(), arista.getFin(), String.valueOf(arista.getPeso()) });
         }
         return lista;
-    }
-    
-    public boolean esConexo() {
-        if (aristas.isEmpty()) {
-            return false; // No hay senderos → no es conexo
-        }
-
-        Set<String> visitadas = new HashSet<>();
-        String inicio = estaciones.get(0);
-
-        // Recorremos BFS para llenar el conjunto de visitadas
-        for (String destino : estaciones) {
-            if (!visitadas.contains(destino)) {
-                Bfs.bfs(inicio, visitadas, aristas, destino);
-            }
-        }
-
-        return visitadas.size() == estaciones.size();
     }
 }

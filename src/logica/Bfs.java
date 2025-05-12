@@ -4,7 +4,8 @@ import java.util.*;
 
 public class Bfs {
 
-    public static boolean bfs(String origen, Set<String> visitados, List<Aristas> aristas, String destino) {
+    public static Set<String> bfs(String origen, List<Aristas> aristas) {
+        Set<String> visitados = new HashSet<>();
         Queue<String> cola = new LinkedList<>();
         cola.add(origen);
         visitados.add(origen);
@@ -20,10 +21,6 @@ public class Bfs {
 
         while (!cola.isEmpty()) {
             String actual = cola.poll();
-            if (actual.equals(destino)) {
-                return true;
-            }
-
             for (String vecino : adyacencias.getOrDefault(actual, Collections.emptyList())) {
                 if (!visitados.contains(vecino)) {
                     visitados.add(vecino);
@@ -32,6 +29,6 @@ public class Bfs {
             }
         }
 
-        return false;
+        return visitados;
     }
 }
