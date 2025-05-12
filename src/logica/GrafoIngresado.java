@@ -5,6 +5,8 @@ import java.util.*;
 public class GrafoIngresado {
     private List<String> estaciones;
     private List<Aristas> aristas;
+    private long tiempoEjecucionKruskal;
+    private long tiempoEjecucionPrim;
 
     public GrafoIngresado() {
         estaciones = new ArrayList<>();
@@ -44,7 +46,7 @@ public class GrafoIngresado {
         return aristas;
     }
 
-    // Verifica si ya existe una arista (ignorando dirección si es no dirigido)
+    // Verifica si ya existe una arista (ignorando dirección ya que  no es dirigido)
     public boolean contieneArista(String inicio, String fin) {
         for (Aristas a : aristas) {
             boolean mismoSentido = a.getInicio().equals(inicio) && a.getFin().equals(fin);
@@ -78,12 +80,20 @@ public class GrafoIngresado {
     
     public List<Aristas> ejecutarKruskal() {
         Kruskal kruskal = new Kruskal(this);
-        return kruskal.encontrarAGM();
+        long inicio = System.nanoTime();
+        List<Aristas> agm = kruskal.encontrarAGM();
+        long fin = System.nanoTime();
+        this.tiempoEjecucionKruskal = fin - inicio;
+        return agm;
     }
     
     public List<Aristas> ejecutarPrim() {
         Prim prim = new Prim(this);
-        return prim.encontrarAGM();
+        long inicio = System.nanoTime();
+        List<Aristas> agm = prim.encontrarAGM();
+        long fin = System.nanoTime();
+        this.tiempoEjecucionPrim = fin - inicio;
+        return agm;
     }
     
     public List<String[]> getAristasComoStrings() {
@@ -92,5 +102,21 @@ public class GrafoIngresado {
             lista.add(new String[] { arista.getInicio(), arista.getFin(), String.valueOf(arista.getPeso()) });
         }
         return lista;
+    }
+    
+    public void setTiempoKruskal(long tiempo) {
+        this.tiempoEjecucionKruskal = tiempo;
+    }
+
+    public long getTiempoKruskal() {
+        return this.tiempoEjecucionKruskal;
+    }
+
+    public void setTiempoPrim(long tiempo) {
+        this.tiempoEjecucionPrim = tiempo;
+    }
+
+    public long getTiempoPrim() {
+        return this.tiempoEjecucionPrim;
     }
 }

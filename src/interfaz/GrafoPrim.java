@@ -49,7 +49,7 @@ public class GrafoPrim extends JFrame {
             List<Coordinate> coords = new ArrayList<>();
             coords.add(inicio);
             coords.add(fin);
-            coords.add(inicio); // cerrar polígono
+            coords.add(inicio); // cerrar polígono (repite las coordenadas del vertice de inicio)
 
             MapPolygonImpl linea = new MapPolygonImpl(coords);
             linea.setColor(Color.YELLOW);
@@ -57,7 +57,7 @@ public class GrafoPrim extends JFrame {
 
             Coordinate medio = obtenerPuntoMedio(inicio, fin);
             MapMarkerDot marcadorImpacto = new MapMarkerDot(impacto, medio);
-            marcadorImpacto.setBackColor(Color.RED);  // opcional, podés cambiarlo
+            marcadorImpacto.setBackColor(Color.RED);
             mapa.addMapMarker(marcadorImpacto);
         }
 

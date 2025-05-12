@@ -80,7 +80,7 @@ public class GrafoController {
                     int impacto = Integer.parseInt(arista[2]);
                     total += impacto;
                 } catch (NumberFormatException e) {
-                    // Si el impacto no es un número, lo ignoramos o podrías lanzar una excepción según prefieras
+                    // Si el impacto no es un número, lo ignoramos 
                 }
             }
         }
@@ -88,13 +88,20 @@ public class GrafoController {
         return total;
     }
     
- // Obtener AGM con Prim
+    public long obtenerTiempoKruskal() {
+        return grafo.getTiempoKruskal();
+    }
+
     public List<Aristas> ejecutarPrim() {
-        return grafo.ejecutarPrim();
+        long inicio = System.nanoTime();
+        List<Aristas> agm = grafo.ejecutarPrim();
+        long fin = System.nanoTime();
+        grafo.setTiempoPrim(fin - inicio);
+        return agm;
     }
 
     public List<String[]> obtenerAGMPrim() {
-        List<Aristas> agm = grafo.ejecutarPrim();
+        List<Aristas> agm = ejecutarPrim();
         List<String[]> resultado = new ArrayList<>();
 
         if (agm != null) {
@@ -109,10 +116,9 @@ public class GrafoController {
 
         return resultado;
     }
-    
+
     public int obtenerPesoTotalAGMPrim() {
-        Prim prim = new Prim(grafo);
-        List<Aristas> agm = prim.encontrarAGM();
+        List<Aristas> agm = grafo.ejecutarPrim(); 
         int total = 0;
 
         if (agm != null) {
@@ -122,6 +128,10 @@ public class GrafoController {
         }
 
         return total;
+    }
+    
+    public long obtenerTiempoPrim() {
+        return grafo.getTiempoPrim();
     }
     
     public ResultadoAgregarEstacion puedeAgregarEstacion(String nombre, Coordinate coord) {

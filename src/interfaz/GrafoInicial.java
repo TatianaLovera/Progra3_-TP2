@@ -20,6 +20,7 @@ public class GrafoInicial extends JFrame {
     private JButton botonDibujarSenderos;
     private JButton botonVerAGM;
     private JButton botonVerAGMPrim;
+    private JButton botonComparacion; // nuevo botón
     private GrafoController controlador;
 
     public GrafoInicial(GrafoController controlador) {
@@ -41,7 +42,7 @@ public class GrafoInicial extends JFrame {
                 String nombre = JOptionPane.showInputDialog("Nombre de la estación:");
 
                 if (nombre != null && !nombre.isEmpty()) {
-                	ResultadoAgregarEstacion resultado = controlador.puedeAgregarEstacion(nombre, coord);
+                    ResultadoAgregarEstacion resultado = controlador.puedeAgregarEstacion(nombre, coord);
 
                     switch (resultado) {
                         case NOMBRE_REPETIDO:
@@ -57,12 +58,13 @@ public class GrafoInicial extends JFrame {
                                     JOptionPane.ERROR_MESSAGE);
                             return;
                         case OK:
-                        	controlador.agregarEstacion(nombre, coord);
-                        	MapMarkerDot marcador = new MapMarkerDot(nombre, coord);
-                        	marcador.setBackColor(Color.MAGENTA);
-                        	mapa.addMapMarker(marcador);
-                        	break;
-                }}
+                            controlador.agregarEstacion(nombre, coord);
+                            MapMarkerDot marcador = new MapMarkerDot(nombre, coord);
+                            marcador.setBackColor(Color.MAGENTA);
+                            mapa.addMapMarker(marcador);
+                            break;
+                    }
+                }
             }
         });
 
@@ -79,11 +81,17 @@ public class GrafoInicial extends JFrame {
         botonVerAGMPrim = new JButton("Ver AGM de Prim");
         botonVerAGMPrim.addActionListener(e -> ejecutarSiEsConexo(this::mostrarAGMPrim));
 
+        botonComparacion = new JButton("Comparación de tiempos");
+        botonComparacion.addActionListener(e -> ejecutarSiEsConexo(() -> {
+            new ComparacionTiempos(controlador).setVisible(true);
+        }));
+
         JPanel panelBotones = new JPanel();
         panelBotones.add(botonIngresarSenderos);
         panelBotones.add(botonDibujarSenderos);
         panelBotones.add(botonVerAGM);
         panelBotones.add(botonVerAGMPrim);
+        panelBotones.add(botonComparacion); // agregado al panel
 
         getContentPane().add(new JLabel("Presione sobre el mapa en el punto donde desea ingresar la estación"), BorderLayout.NORTH);
         getContentPane().add(mapa, BorderLayout.CENTER);
