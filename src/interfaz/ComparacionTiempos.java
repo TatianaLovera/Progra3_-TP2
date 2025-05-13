@@ -18,7 +18,7 @@ public class ComparacionTiempos extends JFrame {
     public ComparacionTiempos(GrafoController controlador) {
         this.controlador = controlador;
 
-        setTitle("Comparación de Algoritmos - Prim vs Kruskal");        
+        setTitle("Comparacion de Algoritmos - Prim vs Kruskal");        
         setSize(1000, 600);  
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -26,7 +26,7 @@ public class ComparacionTiempos extends JFrame {
         JPanel mainPanel = new JPanel(new BorderLayout());
 
         // Título general
-        JLabel tituloPrincipal = new JLabel("Comparación de algoritmos AGM: Prim vs Kruskal", SwingConstants.CENTER);
+        JLabel tituloPrincipal = new JLabel("Comparacion de algoritmos AGM: Prim vs Kruskal", SwingConstants.CENTER);
         tituloPrincipal.setFont(new Font("Arial", Font.BOLD, 18));
         mainPanel.add(tituloPrincipal, BorderLayout.NORTH);
 
