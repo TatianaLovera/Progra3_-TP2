@@ -81,7 +81,7 @@ public class GrafoInicial extends JFrame {
         botonVerAGMPrim = new JButton("Ver AGM de Prim");
         botonVerAGMPrim.addActionListener(e -> ejecutarSiEsConexo(this::mostrarAGMPrim));
 
-        botonComparacion = new JButton("Comparación de tiempos");
+        botonComparacion = new JButton("Comparacion de tiempos");
         botonComparacion.addActionListener(e -> ejecutarSiEsConexo(() -> {
             new ComparacionTiempos(controlador).setVisible(true);
         }));
