@@ -7,25 +7,41 @@ public class Bfs {
     public static Set<String> bfs(String origen, List<Aristas> aristas) {
         Set<String> visitados = new HashSet<>();
         Queue<String> cola = new LinkedList<>();
+        
         cola.add(origen);
         visitados.add(origen);
 
-        // Construimos las adyacencias
         Map<String, List<String>> adyacencias = new HashMap<>();
+        
         for (Aristas a : aristas) {
-            adyacencias.putIfAbsent(a.getInicio(), new ArrayList<>());
-            adyacencias.putIfAbsent(a.getFin(), new ArrayList<>());
-            adyacencias.get(a.getInicio()).add(a.getFin());
-            adyacencias.get(a.getFin()).add(a.getInicio());
+        	String inicio=a.getInicio();
+        	String fin=a.getFin();
+        	
+        	if (!adyacencias.containsKey(inicio)) {
+        		adyacencias.put(inicio,new ArrayList<>());
+        	}
+        	if(!adyacencias.containsKey(fin)) {
+        		adyacencias.put(fin,new ArrayList<>());
+        	}
+        	
+        	adyacencias.get(inicio).add(fin);
+        	adyacencias.get(fin).add(inicio);
         }
 
         while (!cola.isEmpty()) {
-            String actual = cola.poll();
-            for (String vecino : adyacencias.getOrDefault(actual, Collections.emptyList())) {
-                if (!visitados.contains(vecino)) {
-                    visitados.add(vecino);
-                    cola.add(vecino);
+    
+        	String actual=cola.poll();
+        	List<String> vecinos=adyacencias.get(actual);
+        	
+        	if (vecinos==null) {
+        		vecinos=Collections.emptyList();
+        	
                 }
+        	for (String vecino:vecinos) {
+        		if (!visitados.contains(vecino)) {
+        			visitados.add(vecino);
+        			cola.add(vecino);
+        		}
             }
         }
 

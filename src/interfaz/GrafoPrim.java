@@ -19,27 +19,27 @@ public class GrafoPrim extends JFrame {
     public GrafoPrim(GrafoController controlador) {
         this.controlador = controlador;
 
+        setLayout(new BorderLayout());
         setTitle("AGM de Prim");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        // Título arriba
-        JLabel tituloLabel = new JLabel("Camino creado a través del Algoritmo de Prim", SwingConstants.CENTER);
-        tituloLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        creatTitulo();
+        crearMapa();
+        dibujarEstaciones();
+        dibujarAGM();
+        crearFooter();
+      
+    } 
 
-        // Mapa centrado en las Cataratas del Iguazú
-        mapa = new JMapViewer();
-        mapa.setDisplayPosition(new Coordinate(-25.6953, -54.4367), 12);
+    private void crearFooter() {
+    	  int impactoTotal = controlador.obtenerPesoTotalAGMPrim();
+          impactoTotalLabel = new JLabel("Impacto ambiental total: " + impactoTotal, SwingConstants.CENTER);
+          impactoTotalLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+          add(impactoTotalLabel,BorderLayout.SOUTH);
+	}
 
-        // Dibujar estaciones
-        for (String nombre : controlador.getEstacionesNombres()) {
-            Coordinate coord = controlador.getCoordenadaEstacion(nombre);
-            MapMarkerDot marcador = new MapMarkerDot(nombre, coord);
-            marcador.setBackColor(Color.RED);  
-            mapa.addMapMarker(marcador);
-        }
-
-        // Dibujar AGM
+	private void dibujarAGM() {
         List<String[]> agm = controlador.obtenerAGMPrim();
         for (String[] sendero : agm) {
             Coordinate inicio = controlador.getCoordenadaEstacion(sendero[0]);
@@ -49,33 +49,52 @@ public class GrafoPrim extends JFrame {
             List<Coordinate> coords = new ArrayList<>();
             coords.add(inicio);
             coords.add(fin);
-            coords.add(inicio); // cerrar polígono (repite las coordenadas del vertice de inicio)
-
+            coords.add(inicio);
             MapPolygonImpl linea = new MapPolygonImpl(coords);
-            linea.setColor(Color.YELLOW);
+            linea= setColorSendero(linea, impacto);
             mapa.addMapPolygon(linea);
+        }		
+	}
 
-            Coordinate medio = obtenerPuntoMedio(inicio, fin);
-            MapMarkerDot marcadorImpacto = new MapMarkerDot(impacto, medio);
-            marcadorImpacto.setBackColor(Color.RED);
-            mapa.addMapMarker(marcadorImpacto);
+	private void dibujarEstaciones() {
+		for (String nombre : controlador.getEstacionesNombres()) {
+            Coordinate coord = controlador.getCoordenadaEstacion(nombre);
+            MapMarkerDot marcador = new MapMarkerDot(nombre, coord);
+            marcador.setBackColor(Color.RED);  
+            mapa.addMapMarker(marcador);
+        }
+		
+	}
+
+
+	private void crearMapa() {
+		mapa = new JMapViewer();
+        mapa.setDisplayPosition(new Coordinate(-25.6953, -54.4367), 12);
+        add(mapa,BorderLayout.CENTER);
+	}
+
+	private void creatTitulo() {
+		JLabel tituloLabel = new JLabel("Camino creado a través del Algoritmo de Prim", SwingConstants.CENTER);
+        tituloLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        add(tituloLabel,BorderLayout.NORTH);
+	}
+
+    private MapPolygonImpl setColorSendero(MapPolygonImpl linea, String impacto) {
+        Color color;
+        int impactoambiental=Integer.parseInt(impacto);
+
+        if (impactoambiental > 5) {
+            color = Color.RED; 
+        } else if (impactoambiental > 3) {
+            color = Color.YELLOW;
+        } else {
+            color = Color.GREEN; 
         }
 
-        // Etiqueta abajo para impacto total
-        int impactoTotal = controlador.obtenerPesoTotalAGMPrim();
-        impactoTotalLabel = new JLabel("Impacto ambiental total: " + impactoTotal, SwingConstants.CENTER);
-        impactoTotalLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        linea.setColor(color);
+        linea.setBackColor(color);
+        linea.setStroke(new BasicStroke(2));
 
-        // Layout
-        getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(tituloLabel, BorderLayout.NORTH);
-        getContentPane().add(mapa, BorderLayout.CENTER);
-        getContentPane().add(impactoTotalLabel, BorderLayout.SOUTH);
-    }
-
-    private Coordinate obtenerPuntoMedio(Coordinate a, Coordinate b) {
-        double lat = (a.getLat() + b.getLat()) / 2;
-        double lon = (a.getLon() + b.getLon()) / 2;
-        return new Coordinate(lat, lon);
+        return linea;
     }
 }

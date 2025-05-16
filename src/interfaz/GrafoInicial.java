@@ -2,6 +2,8 @@ package interfaz;
 
 import controlador.GrafoController;
 import controlador.ResultadoAgregarEstacion;
+import logica.Aristas;
+
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
@@ -13,6 +15,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle.Control;
 
 public class GrafoInicial extends JFrame {
     private JMapViewer mapa;
@@ -20,7 +23,7 @@ public class GrafoInicial extends JFrame {
     private JButton botonDibujarSenderos;
     private JButton botonVerAGM;
     private JButton botonVerAGMPrim;
-    private JButton botonComparacion; // nuevo botón
+    private JButton botonComparacion;
     private GrafoController controlador;
 
     public GrafoInicial(GrafoController controlador) {
@@ -30,14 +33,47 @@ public class GrafoInicial extends JFrame {
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Inicialización del mapa con la posición centrada en las Cataratas del Iguazú
         mapa = new JMapViewer();
         mapa.setDisplayPosition(new Coordinate(-25.6953, -54.4367), 12);
 
-        // Agregar un MouseListener para capturar el clic en el mapa
-        mapa.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
+        mapa.addMouseListener(eventoClickMapa());
+        
+      
+        botonIngresarSenderos = new JButton("Ingresar Senderos");
+        botonIngresarSenderos.addActionListener(e -> ingresarSendero());
+
+        botonDibujarSenderos = new JButton("Dibujar Senderos");
+        botonDibujarSenderos.addActionListener(e -> dibujarSenderos());
+
+        botonVerAGM = new JButton("Ver AGM de Kruskal");
+        botonVerAGM.addActionListener(e -> ejecutarSiEsConexo(this::mostrarAGMKruskal));
+
+        botonVerAGMPrim = new JButton("Ver AGM de Prim");
+        botonVerAGMPrim.addActionListener(e -> ejecutarSiEsConexo(this::mostrarAGMPrim));
+
+        botonComparacion = new JButton("Comparacion de tiempos");
+        botonComparacion.addActionListener(e -> ejecutarSiEsConexo(() -> {
+            new ComparacionTiempos(controlador).setVisible(true);
+        }));
+
+        JPanel panelBotones = new JPanel();
+        panelBotones.add(botonIngresarSenderos);
+        panelBotones.add(botonDibujarSenderos);
+        panelBotones.add(botonVerAGM);
+        panelBotones.add(botonVerAGMPrim);
+        panelBotones.add(botonComparacion);
+
+        getContentPane().add(new JLabel("Presione sobre el mapa en el punto donde desea ingresar la estación"), BorderLayout.NORTH);
+        getContentPane().add(mapa, BorderLayout.CENTER);
+        getContentPane().add(panelBotones, BorderLayout.SOUTH);
+        
+        setVisible(true);
+    }
+    public MouseAdapter eventoClickMapa () {
+    	return new MouseAdapter() {
+    		@Override
+    		public void mouseClicked(MouseEvent e) {
+
                 Coordinate coord = (Coordinate) mapa.getPosition(e.getPoint());
                 String nombre = JOptionPane.showInputDialog("Nombre de la estación:");
 
@@ -65,38 +101,10 @@ public class GrafoInicial extends JFrame {
                             break;
                     }
                 }
-            }
-        });
-
-        // Botones
-        botonIngresarSenderos = new JButton("Ingresar Senderos");
-        botonIngresarSenderos.addActionListener(e -> ingresarSendero());
-
-        botonDibujarSenderos = new JButton("Dibujar Senderos");
-        botonDibujarSenderos.addActionListener(e -> dibujarSenderos());
-
-        botonVerAGM = new JButton("Ver AGM de Kruskal");
-        botonVerAGM.addActionListener(e -> ejecutarSiEsConexo(this::mostrarAGMKruskal));
-
-        botonVerAGMPrim = new JButton("Ver AGM de Prim");
-        botonVerAGMPrim.addActionListener(e -> ejecutarSiEsConexo(this::mostrarAGMPrim));
-
-        botonComparacion = new JButton("Comparacion de tiempos");
-        botonComparacion.addActionListener(e -> ejecutarSiEsConexo(() -> {
-            new ComparacionTiempos(controlador).setVisible(true);
-        }));
-
-        JPanel panelBotones = new JPanel();
-        panelBotones.add(botonIngresarSenderos);
-        panelBotones.add(botonDibujarSenderos);
-        panelBotones.add(botonVerAGM);
-        panelBotones.add(botonVerAGMPrim);
-        panelBotones.add(botonComparacion); // agregado al panel
-
-        getContentPane().add(new JLabel("Presione sobre el mapa en el punto donde desea ingresar la estación"), BorderLayout.NORTH);
-        getContentPane().add(mapa, BorderLayout.CENTER);
-        getContentPane().add(panelBotones, BorderLayout.SOUTH);
+    		}
+		};
     }
+
 
     private void ingresarSendero() {
         List<String> estaciones = controlador.getEstacionesNombres();
@@ -149,33 +157,43 @@ public class GrafoInicial extends JFrame {
     }
 
     private void dibujarSenderos() {
-        List<String[]> senderos = controlador.getSenderos();
-        if (senderos.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No hay senderos para dibujar.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-
-        for (String[] sendero : senderos) {
-            Coordinate inicio = controlador.getCoordenadaEstacion(sendero[0]);
-            Coordinate fin = controlador.getCoordenadaEstacion(sendero[1]);
-            String impacto = sendero[2];
-
-            List<Coordinate> coords = new ArrayList<>();
-            coords.add(inicio);
-            coords.add(fin);
-            coords.add(inicio); // para cerrar el polígono
-
+    	
+    	List<Aristas> senderos=controlador.getAristas() ;
+    	
+    	for (Aristas sendero:senderos) {
+    		Coordinate coordenadaInicio=controlador.getCoordenadaEstacion(sendero.getInicio());
+    		Coordinate coordenadafin=controlador.getCoordenadaEstacion(sendero.getFin());
+    		
+    		List<Coordinate> coords = new ArrayList<>();
+            coords.add(coordenadaInicio);
+            coords.add(coordenadafin);
+            coords.add(coordenadaInicio); 
+            
             MapPolygonImpl linea = new MapPolygonImpl(coords);
-            mapa.addMapPolygon(linea);
-
-            Coordinate medio = obtenerPuntoMedio(inicio, fin);
-            MapMarkerDot marcadorImpacto = new MapMarkerDot(impacto, medio);
-            marcadorImpacto.setBackColor(Color.MAGENTA);
-            mapa.addMapMarker(marcadorImpacto);
-        }
+            linea=  setColorSendero(sendero.getPeso(), linea);
+            mapa.addMapPolygon(linea);    		
+    	}
+    	
     }
 
-    private void mostrarAGMKruskal() {
+    private MapPolygonImpl setColorSendero(int impactoAmbiental, MapPolygonImpl linea) {
+
+        Color color;
+        if (impactoAmbiental > 5) {
+            color = Color.RED; 
+        } else if (impactoAmbiental > 3) {
+            color = Color.YELLOW;
+        } else {
+            color = Color.GREEN; 
+        }
+
+        linea.setColor(color);
+        linea.setBackColor(color);
+        linea.setStroke(new BasicStroke(2)); 
+        return linea;
+    }
+
+	private void mostrarAGMKruskal() {
         GrafoKruskal ventanaKruskal = new GrafoKruskal(controlador);
         ventanaKruskal.setVisible(true);
     }
@@ -185,11 +203,7 @@ public class GrafoInicial extends JFrame {
         ventanaPrim.setVisible(true);
     }
 
-    private Coordinate obtenerPuntoMedio(Coordinate a, Coordinate b) {
-        double lat = (a.getLat() + b.getLat()) / 2;
-        double lon = (a.getLon() + b.getLon()) / 2;
-        return new Coordinate(lat, lon);
-    }
+  
 
     private void ejecutarSiEsConexo(Runnable accion) {
         if (!controlador.esConexo()) {

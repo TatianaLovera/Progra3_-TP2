@@ -16,7 +16,6 @@ public class GrafoController {
         this.estacionesCoordenadas = new HashMap<>();
     }
 
-    // Agregar estación por nombre y coordenada
     public void agregarEstacion(String nombreEstacion, Coordinate coordenada) {
         if (!grafo.getEstaciones().contains(nombreEstacion)) {
             grafo.agregarEstacion(nombreEstacion);
@@ -24,28 +23,23 @@ public class GrafoController {
         }
     }
 
-    // Obtener lista de nombres de estaciones
     public List<String> getEstacionesNombres() {
         return grafo.getEstaciones();
     }
 
-    // Obtener coordenada por nombre
     public Coordinate getCoordenadaEstacion(String nombreEstacion) {
         return estacionesCoordenadas.get(nombreEstacion);
     }
 
-    // Agregar arista entre dos estaciones por nombre y peso
     public void agregarArista(String nombreInicio, String nombreFin, int peso) {
         Aristas arista = new Aristas(nombreInicio, nombreFin, peso);
         grafo.agregarArista(arista);
     }
 
-    // Verificar si ya existe una arista entre dos estaciones
     public boolean existeArista(String nombreInicio, String nombreFin) {
         return grafo.contieneArista(nombreInicio, nombreFin);
     }
 
-    // Obtener todas las aristas
     public List<Aristas> getAristas() {
         return grafo.getAristas();
     }
@@ -54,7 +48,6 @@ public class GrafoController {
         return grafo.getAristasComoStrings();
     }
 
-    // Obtener AGM con Kruskal
     public List<Aristas> ejecutarKruskal() {
         return grafo.ejecutarKruskal();
     }
@@ -63,7 +56,15 @@ public class GrafoController {
         List<Aristas> agm = grafo.ejecutarKruskal();
         List<String[]> resultado = new ArrayList<>();
         for (Aristas a : agm) {
-            resultado.add(new String[]{a.getInicio(), a.getFin(), String.valueOf(a.getPeso())});
+        	String inicio=a.getInicio();
+        	String fin=a.getFin();
+        	int peso=a.getPeso();
+        	String[] datos=new String [3];
+        	datos[0]=inicio;
+        	datos[1]=fin;
+        	datos[2]=peso+"";
+        	
+            resultado.add(datos);
         }
         return resultado;
     }
@@ -76,15 +77,10 @@ public class GrafoController {
 
         if (agm != null) {
             for (String[] arista : agm) {
-                try {
-                    int impacto = Integer.parseInt(arista[2]);
-                    total += impacto;
-                } catch (NumberFormatException e) {
-                    // Si el impacto no es un número, lo ignoramos 
-                }
+            	int impacto = Integer.parseInt(arista[2]);
+            	total += impacto;
             }
         }
-
         return total;
     }
     
@@ -106,14 +102,17 @@ public class GrafoController {
 
         if (agm != null) {
             for (Aristas arista : agm) {
-                resultado.add(new String[]{
-                    arista.getInicio(),
-                    arista.getFin(),
-                    String.valueOf(arista.getPeso())
-                });
+            	String inicio=arista.getInicio();
+	        	String fin=arista.getFin();
+	        	int peso=arista.getPeso();
+	        	String[] datos=new String [3];
+	        	datos[0]=inicio;
+	        	datos[1]=fin;
+	        	datos[2]=peso+"";
+	        	
+	            resultado.add(datos);
             }
         }
-
         return resultado;
     }
 
@@ -126,7 +125,6 @@ public class GrafoController {
                 total += arista.getPeso();
             }
         }
-
         return total;
     }
     
@@ -135,12 +133,10 @@ public class GrafoController {
     }
     
     public ResultadoAgregarEstacion puedeAgregarEstacion(String nombre, Coordinate coord) {
-        // Verificar nombre repetido
         if (estacionesCoordenadas.containsKey(nombre)) {
             return ResultadoAgregarEstacion.NOMBRE_REPETIDO;
         }
 
-        // Verificar coordenada repetida
         for (Coordinate existente : estacionesCoordenadas.values()) {
             if (Math.abs(existente.getLat() - coord.getLat()) < 1e-4 &&
                 Math.abs(existente.getLon() - coord.getLon()) < 1e-4) {
@@ -155,5 +151,4 @@ public class GrafoController {
         return grafo.esConexo();
     }
 
-	
 }
